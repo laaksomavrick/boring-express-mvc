@@ -55,6 +55,10 @@ const config = convict({
       env: "SECRET_BCRYPT",
     },
   },
+  viewsPath: {
+    default: "views",
+    env: "VIEWS_PATH",
+  },
 });
 
 if (config.get("env") === "test") {

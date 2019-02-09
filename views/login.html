@@ -1,0 +1,9 @@
+{% extends "index.html" %} {% block body %}
+<form action="/login" method="post">
+  <label for="email">Enter email: </label>
+  <input id="email" type="text" name="auth[email]" value="" />
+  <label for="email">Enter password: </label>
+  <input id="password" type="password" name="auth[password]" value="" />
+  <input type="submit" value="OK" />
+</form>
+{% endblock %}

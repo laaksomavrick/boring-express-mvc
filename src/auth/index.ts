@@ -1,6 +1,6 @@
 import { Express } from "express";
 import { Core } from "../core";
-import { create } from "./handlers";
+import { create, get } from "./handlers";
 import { validateCreate } from "./middlewares";
 
 /**
@@ -8,6 +8,7 @@ import { validateCreate } from "./middlewares";
  */
 export default (core: Core): ((app: Express) => void) => {
   return (app: Express): void => {
-    app.post("/auth", validateCreate, create(core));
+    app.get("/login", get(core));
+    app.post("/login", validateCreate, create(core));
   };
 };

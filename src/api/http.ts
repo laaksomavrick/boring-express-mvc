@@ -23,3 +23,13 @@ export const responseError = (
     error: error.toString(),
   });
 };
+
+/**
+ * Utility function for ensuring common formatting amongst all error responses.
+ */
+export const renderError = (res: Response, error: Error, status: number = 500): void => {
+  res.status(status).render("error.html", {
+    status,
+    error: error.toString(),
+  });
+};

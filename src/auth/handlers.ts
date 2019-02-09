@@ -6,20 +6,27 @@ import { Core } from "../core";
 import { ForbiddenError, NotFoundError } from "../errors";
 import { findByEmail } from "../users/repository";
 
+export const get = (core: Core): Handler => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      res.render("login.html");
+    } catch (error) {
+      next(error);
+    }
+  };
+};
+
 /**
  * Issues a JWT for a valid username and password.
  */
 export const create = ({ db, crypto }: Core): Handler => {
-  return async (
-    {
-      body: {
-        auth: { email, password },
-      },
-    }: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const {
+        body: {
+          auth: { email, password },
+        },
+      } = req;
       const user = await findByEmail(db, email);
       if (!user) {
         throw new NotFoundError();
@@ -29,12 +36,13 @@ export const create = ({ db, crypto }: Core): Handler => {
       if (!authorized) {
         throw new ForbiddenError();
       }
-
+      req.session.user = user;
       // todo store these
       // todo service for signing and checking against stored
       // todo tests for above fns
-      const token = sign({ id: user.id }, config.get("secret.jwt"));
-      response(res, { token });
+      // const token = sign({ id: user.id }, config.get("secret.jwt"));
+      // response(res, { token });
+      res.redirect("/");
     } catch (error) {
       next(error);
     }

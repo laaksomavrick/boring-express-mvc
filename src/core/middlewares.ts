@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
-import { responseError } from "../api";
-import { AuthorizedRequest } from "../api";
+import { AuthorizedRequest, renderError } from "../api";
 import config from "../config";
 import { ForbiddenError, UnauthorizedError } from "../errors";
 
@@ -16,7 +15,7 @@ export const globalErrorHandler = (
   next: NextFunction,
 ): void => {
   const status = error.status || 500;
-  responseError(res, error, status);
+  renderError(res, error, status);
 };
 
 /**
@@ -31,19 +30,14 @@ export const authorize = async (
 ): Promise<void> => {
   try {
     const {
-      headers: { authorization = null },
+      session: { user = null },
     } = req;
-    if (!authorization) {
-      throw new UnauthorizedError();
+    if (!user) {
+      res.redirect("/login");
+    } else {
+      (req as AuthorizedRequest).userId = user.id;
+      next();
     }
-    const token = authorization.split("Bearer ")[1];
-    if (!token) {
-      throw new UnauthorizedError();
-    }
-    // tslint:disable-next-line:no-any
-    const { id } = (await verify(token, config.get("secret.jwt"))) as any;
-    (req as AuthorizedRequest).userId = id;
-    next();
   } catch (error) {
     next(error);
   }

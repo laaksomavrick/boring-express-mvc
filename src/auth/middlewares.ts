@@ -7,6 +7,7 @@ import { ValidationError } from "../errors";
  */
 export const validateCreate = (
   { body: { auth: { email = null, password = null } = {} } }: Request,
+  req: Request,
   res: Response,
   next: NextFunction,
 ): void => {
