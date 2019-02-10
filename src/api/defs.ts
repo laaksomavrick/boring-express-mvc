@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { User } from "../users/repository";
 
 /**
  * Type defining the function signature of handlers or middlewares.
@@ -14,5 +15,6 @@ export type Handler = ((
  * Used post authorization middleware.
  */
 export interface AuthorizedRequest extends Request {
-  userId: number;
+  user: User;
+  userId: number; // todo remove
 }

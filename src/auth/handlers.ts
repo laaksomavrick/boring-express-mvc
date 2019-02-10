@@ -9,7 +9,7 @@ import { findByEmail } from "../users/repository";
 export const get = (core: Core): Handler => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      res.render("login.html");
+      return res.render("login.html");
     } catch (error) {
       next(error);
     }
@@ -29,20 +29,21 @@ export const create = ({ db, crypto }: Core): Handler => {
       } = req;
       const user = await findByEmail(db, email);
       if (!user) {
-        throw new NotFoundError();
+        return res.render("login.html", {
+          // todo make better
+          errors: [{ param: "user", msg: "User does not exist" }],
+        });
       }
 
       const authorized = await crypto.compare(password, user.password);
       if (!authorized) {
-        throw new ForbiddenError();
+        return res.render("login.html", {
+          // todo make better
+          errors: [{ param: "password", msg: "Invalid password provided" }],
+        });
       }
       req.session.user = user;
-      // todo store these
-      // todo service for signing and checking against stored
-      // todo tests for above fns
-      // const token = sign({ id: user.id }, config.get("secret.jwt"));
-      // response(res, { token });
-      res.redirect("/");
+      return res.redirect("/");
     } catch (error) {
       next(error);
     }

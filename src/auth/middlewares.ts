@@ -1,20 +1,23 @@
 import { NextFunction, Request, Response } from "express";
-import { ValidationError } from "../errors";
 
 /**
  * Validator for the create handler.
  * A username and password should exist on an incoming request.
  */
-export const validateCreate = (
+export const validateLoginForm = (
   { body: { auth: { email = null, password = null } = {} } }: Request,
   req: Request,
   res: Response,
   next: NextFunction,
 ): void => {
   try {
+    // todo: validator.js
     const valid = email !== null && password !== null;
     if (!valid) {
-      throw new ValidationError();
+      return res.render("login.html", {
+        // todo make better
+        errors: [{ param: "input", msg: "Invalid input provided" }],
+      });
     }
     next();
   } catch (error) {
